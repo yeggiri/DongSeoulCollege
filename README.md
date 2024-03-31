@@ -65,7 +65,36 @@ for i in range(0, len(x), batch_size):
 print("정확도 : " + str(float(accuracy_cnt)/ len(x)))
 
 
+2. MNIST 2
 
+import tensorflow as tf
+import tensorflow.keras.datasets as ds
+
+import numpy as np
+
+def cross_entropy_error(y,t):
+    if y.ndim == 1:
+        t = t.reshape(1, t.size)
+        y = y.reshape(1, y.size)
+        
+    batch_size = y.shape[0]
+    return -np.sum(t * np.log(y + 1e-7)) /  batch_size #return -np.sum(np.log(y[np.arange(batch_size), t] + 1e-7)) / batch_size
+
+(x_train, t_train), (x_test, t_test) = ds.mnist.load_data()
+
+x_train_flatten = x_train.reshape(-1, 28*28)
+num_classes = 10
+t_train_flatten = tf.keras.utils.to_categorical(t_train, num_classes) #원-핫 인코딩 하는 함수 사용
+
+print(x_train_flatten.shape)
+print(t_train_flatten.shape)
+
+train_size = x_train_flatten.shape[0] #훈련 데이터 배열의 첫 번째 차원 크기(행의 수) 저장
+batch_size = 10
+batch_mask = np.random.choice(train_size, batch_size) #훈련 데이터들 중 10장을 랜덤으로 뽑아라
+
+x_batch = x_train_flatten[batch_mask]
+t_batch = t_train_flatten[batch_mask]
 
 
 
