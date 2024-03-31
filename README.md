@@ -4,13 +4,14 @@
 #인공지능개론 (이성진)
 1. mnist
    
+
 import tensorflow as tf
 import tensorflow.keras.datasets as ds
 import pickle
 
 from PIL import Image
-from test import softmax 
-from test import sigmoid
+from CNN import softmax 
+from CNN import sigmoid
 import numpy as np
 
 def img_show(img):
@@ -23,7 +24,7 @@ def get_data():
     x_test_flatten = x_test.reshape(-1, 28*28) / 255.0 
     return x_test_flatten, t_test
 
-def init_network():          # mnist 가중치 불러오기 - github에서 따로 다운받아야 함
+def init_network():
     with open("sample_weight.pkl", 'rb') as f:
         network = pickle.load(f)
     return network
@@ -45,14 +46,22 @@ def predict(network, x):
 
 x, t = get_data()
 network = init_network()
-
+batch_size = 100 #배치 크기
 accuracy_cnt = 0
-for i in range(len(x)):
-    y = predict(network, x[i])
-    p = np.argmax(y) #확률이 가장 높은 원소의 인덱스 획득
-    if p == t[i]:
-        accuracy_cnt += 1
-        
+
+#배치사용
+for i in range(0, len(x), batch_size):
+    x_batch = x[i:i+batch_size]
+    y_batch = predict(network, x_batch)
+    p = np.argmax(y_batch, axis=1) #확률이 가장 높은 원소의 인덱스 획득
+    accuracy_cnt += np.sum(p == t[i:i+batch_size])
+
+#단일 계산
+# for i in range(len(x)):
+    #y = predict(network, x[i])
+    #p = np.argmax(y)
+    #if p == t[i]:
+        #accuracy_cnt += 1       
 print("정확도 : " + str(float(accuracy_cnt)/ len(x)))
 
 
